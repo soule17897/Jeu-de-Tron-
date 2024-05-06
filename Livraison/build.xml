@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!-- Déclaration de la version XML -->
+
+<project name="Jeu_TRON" default="compile" basedir=".">
+
+    <!-- App properties -->
+
+    <property name="app.name" value="Jeu_tron"/>
+
+    <property name="app.version" value="1.0"/>
+
+    <!-- Paths -->
+
+    <property name="src.dir" value="src"/>
+
+    <property name="livraison.dir" value="livraison"/>
+
+    <property name="build.dir" value="build"/>
+
+    <property name="dist.dir" value="dist"/>
+
+    <property name="lib.dir" value="lib"/>
+
+    <property name="doc.dir" value="doc"/>
+
+    <property name="test.dir" value="tests"/>
+
+    <property name="deliverable.dir" value="deliverable"/>
+
+    <!-- Java properties -->
+
+    <property name="java.compilerargs" value="-Xlint:unchecked"/>
+
+    <!-- Javadoc properties -->
+
+    <property name="javadoc.version" value="1.8"/>
+
+    <property name="javadoc.source" value="1.8"/>
+
+    <property name="javadoc.target" value="1.8"/>
+
+    <property name="javadoc.encoding" value="UTF-8"/>
+
+    <property name="javadoc.author" value="true"/>
+
+    <property name="javadoc.version" value="true"/>
+
+    <property name="javadoc.use" value="true"/>
+
+    <property name="javadoc.windowtitle" value="${app.name} ${app.version} API"/>
+
+    <property name="javadoc.doctitle" value="${app.name} ${app.version} API"/>
+
+    <property name="javadoc.header" value="&lt;h1&gt;${app.name} ${app.version} API&lt;/h1&gt;"/>
+
+    <property name="javadoc.footer" value="&lt;h2&gt;${app.name} ${app.version} API&lt;/h2&gt;"/>
+
+    <property name="javadoc.bottom" value="&lt;h3&gt;${app.name} ${app.version} API&lt;/h3&gt;"/>
+
+    <!-- JAR properties -->
+
+    <property name="jar.manifest" value="manifest.mf"/>
+
+    <property name="jar.file" value="${app.name}-${app.version}.jar"/>
+
+    <property name="jar.dir" value="jar"/>
+
+    <!-- Path -->
+
+    <path id="classpath">
+
+        <fileset dir="${lib.dir}">
+
+            <include name="**/*.jar"/>
+
+        </fileset>
+
+    </path>
+
+    <!-- Init target -->
+
+    <target name="init" description="Create principal directories">
+
+        <mkdir dir="${build.dir}"/>
+
+        <mkdir dir="${dist.dir}"/>
+
+        <mkdir dir="${doc.dir}"/>
+
+        <mkdir dir="${jar.dir}"/>
+
+        <mkdir dir="${deliverable.dir}"/>
+
+        <echo message="Initialisation"/>
+
+        <echo>
+
+            Initialisation des traitements du projet ${ant.project.name}
+
+        </echo>
+
+    </target>
+
+    <!-- Clean target -->
+
+    <target name="clean" description="Clean unnecessary files">
+
+        <delete dir="${build.dir}"/>
+
+        <delete dir="${dist.dir}"/>
+
+        <delete dir="${doc.dir}"/>
+
+        <delete dir="${jar.dir}"/>
+
+    </target>
+
+    <!-- Compile target -->
+
+    <target name="compile" depends="clean, init" description="Compile all sources">
+
+        <javac srcdir="${src.dir}" destdir="${build.dir}"
+
+               debuglevel="lines,vars,source" includeantruntime="false"
+
+               encoding="UTF-8">
+
+            <classpath refid="classpath"/>
+
+            <compilerarg line="${java.compilerargs}"/>
+
+        </javac>
+
+        <copy todir="${build.dir}">
+
+            <fileset dir="${src.dir}">
+
+                <include name="**/*.properties"/>
+
+            </fileset>
+
+        </copy>
+
+    </target>
+
+    <!-- Javadoc target -->
+
+    <!-- Javadoc target -->
+
+    <target name="javadoc" depends="compile" description="Generate javadoc">
+
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}" author="${javadoc.author}"
+
+                 version="${javadoc.version}" use="${javadoc.use}" windowtitle="${javadoc.windowtitle}"
+
+                 doctitle="${javadoc.doctitle}" header="${javadoc.header}" footer="${javadoc.footer}"
+
+                 bottom="${javadoc.bottom}" source="${javadoc.source}"
+
+                 encoding="${javadoc.encoding}">
+
+            <classpath refid="classpath"/>
+
+        </javadoc>
+
+    </target>
+
+    <!-- Jar target -->
+
+    <target name="jar" depends="compile" description="Generate jar file">
+
+        <jar destfile="${jar.dir}/${jar.file}" basedir="${build.dir}">
+
+            <manifest>
+
+                <attribute name="Manifest-Version" value="1.0"/>
+
+                <attribute name="Main-Class" value="game.tron.core.Main"/>
+
+                <attribute name="Class-Path" value="."/>
+
+            </manifest>
+
+        </jar>
+
+    </target>
+
+    <!-- Dist target -->
+
+    <target name="dist" depends="jar, javadoc" description="Generate distribution">
+
+        <copy todir="${dist.dir}">
+
+            <fileset dir="${jar.dir}">
+
+                <include name="**/*.jar"/>
+
+            </fileset>
+
+        </copy>
+
+    </target>
+
+    <!-- Run target à partir du jar -->
+
+    <target name="run" depends="jar" description="Run application">
+
+        <java classname="game.tron.core.Main" fork="true">
+
+            <classpath refid="classpath"/>
+
+            <classpath path="${jar.dir}/${jar.file}"/>
+
+        </java>
+
+    </target>
+
+    <!-- Help target -->
+
+    <target name="help" description="Display help">
+
+        <echo>Available targets:</echo>
+
+        <echo>  init: Permet de créer les dossiers de base</echo>
+
+        <echo>  clean : Permet de supprimer les fichiers inutiles</echo>
+
+        <echo>  compile: Permet de compiler le main</echo>
+
+        <echo>  javadoc: Permet de générer la javadoc qui permet de comprendre le code</echo>
+
+        <echo>  jar: Permet de générer le jar</echo>
+
+        <echo>  dist: Permet de générer la distribution du projet</echo>
+
+        <echo>  run: Permet de lancer le main</echo>
+
+        <echo>  runGraphique: Permet de lancer le main graphique</echo>
+
+        <echo>  help: Permet d'afficher l'aide</echo>
+
+        <echo>  install junit4: Permet d'installer les librairies de test</echo>
+
+        <echo>  install junit5 : meme chose que junit4 mais pour junit5</echo>
+
+        <echo>  install: Permet d'installer les librairies de test</echo>
+
+    </target>
+
+    <!-- Install target -->
+
+    <!-- Install test libraries -->
+
+
+    <!-- Test target -->
+
+    <!-- Compile test classes -->
+
+    <target name="test compile" depends="compile" description="Compile test classes">
+
+        <mkdir dir="${build.dir}/test"/>
+
+        <javac srcdir="${test.dir}" destdir="${build.dir}" debug="on" includeantruntime="false">
+
+            <classpath refid="classpath"/>
+
+            <classpath path="${build.dir}"/>
+
+        </javac>
+
+    </target>
+
+    <target name="test" depends="test compile" description="Run test">
+
+        <junit fork="true" printsummary="yes" haltonfailure="yes" showoutput="yes">
+
+            <classpath refid="classpath"/>
+
+            <classpath location="${build.dir}"/>
+
+            <formatter type="plain" usefile="false"/>
+
+            <batchtest todir="${build.dir}/test-reports">
+
+                <fileset dir="${test.dir}">
+
+                    <include name="**/*.java"/>
+
+                </fileset>
+
+            </batchtest>
+
+        </junit>
+
+    </target>
+
+</project>
